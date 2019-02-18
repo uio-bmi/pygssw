@@ -36,8 +36,6 @@ class Aligner:
 
     def _find_all_local_nodes_and_edges(self):
         self._traverse_from_node(self.start_node, None, n_bp_traversed=0, is_traversing_left=False)
-        self._traversed_nodes = {}
-        #print("Traversing left")
         self._traverse_from_node(-self.start_node, None, n_bp_traversed=0, is_traversing_left=True)
 
     def _traverse_from_node(self, node, prev_node, n_bp_traversed, is_traversing_left=False):
@@ -51,13 +49,14 @@ class Aligner:
         node = int(node)
         if prev_node is not None:
             #print("Adding edge %d-%d" % (prev_node, node))
-            if node < prev_node:
-                logging.error("Graph is not sorted. Only sorted graphs currently supported")
-
-            if is_traversing_left:
-                self._edges.add((abs(node), abs(prev_node)))
+            if (is_traversing_left and abs(prev_node) < abs(node)) or (not is_traversing_left and node < prev_node):
+                #logging.warning("Graph is not sorted. Skipping edges that are not sorted when locally aligning")
+                pass
             else:
-                self._edges.add((prev_node, node))
+                if is_traversing_left:
+                    self._edges.add((abs(node), abs(prev_node)))
+                else:
+                    self._edges.add((prev_node, node))
 
         if node in self._traversed_nodes:  # and self._traversed_nodes[node] <= n_bp_traversed:
             #print("   Stopping. already processed")
@@ -103,6 +102,7 @@ class Aligner:
         #print(self._n_bp_to_traverse_left)
         #print(self._n_bp_to_traverse_right)
         #print(self.sequence)
+        #print(self.sequence.lower())
         #print(nodes)
         #print(edges)
         #print(sequences)
