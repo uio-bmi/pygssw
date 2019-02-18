@@ -5,18 +5,26 @@ from pygssw.gssw import gssw_node_create, gssw_create_nt_table, gssw_create_scor
 
 
 class Aligner:
-    def __init__(self, ob_graph, sequence_graph, start_node, sequence):
+    def __init__(self, ob_graph, sequence_graph, start_node, sequence,
+                 n_bp_to_traverse_right=None, n_bp_to_traverse_left=None):
         self.ob_graph = ob_graph
         self.start_node = start_node
         self._sequence_graph = sequence_graph
         self.sequence = sequence
-        self._n_bp_to_traverse = len(sequence) + 10
+
+        if n_bp_to_traverse_right is None:
+            assert n_bp_to_traverse_left is None, "Both right and left bp must be set if either is set"
+            self._n_bp_to_traverse_right = len(sequence) + 10
+            self._n_bp_to_traverse_left = 0
+        else:
+            self._n_bp_to_traverse_left = n_bp_to_traverse_left
+            self._n_bp_to_traverse_right = n_bp_to_traverse_right
 
         self.is_reverse = False
-        self.adj_list = ob_graph.adj_list
+        #self.adj_list = ob_graph.adj_list
         if self.start_node < 0:
             self.is_reverse = True
-            self.adj_list = ob_graph.reverse_adj_list
+            #self.adj_list = ob_graph.reverse_adj_list
 
 
         self._nodes = set()
@@ -27,9 +35,18 @@ class Aligner:
         self._find_all_local_nodes_and_edges()
 
     def _find_all_local_nodes_and_edges(self):
-        self._traverse_from_node(self.start_node, None, n_bp_traversed=0)
+        self._traverse_from_node(self.start_node, None, n_bp_traversed=0, is_traversing_left=False)
+        self._traversed_nodes = {}
+        #print("Traversing left")
+        self._traverse_from_node(-self.start_node, None, n_bp_traversed=0, is_traversing_left=True)
 
-    def _traverse_from_node(self, node, prev_node, n_bp_traversed):
+    def _traverse_from_node(self, node, prev_node, n_bp_traversed, is_traversing_left=False):
+        adj_list = self.ob_graph.adj_list
+        n_bp_to_traverse = self._n_bp_to_traverse_right
+        if is_traversing_left:
+            n_bp_to_traverse = self._n_bp_to_traverse_left
+            adj_list = self.ob_graph.reverse_adj_list
+
         #print("On node %d. Prev: %s" % (node, prev_node))
         node = int(node)
         if prev_node is not None:
@@ -37,7 +54,10 @@ class Aligner:
             if node < prev_node:
                 logging.error("Graph is not sorted. Only sorted graphs currently supported")
 
-            self._edges.add((prev_node, node))
+            if is_traversing_left:
+                self._edges.add((abs(node), abs(prev_node)))
+            else:
+                self._edges.add((prev_node, node))
 
         if node in self._traversed_nodes:  # and self._traversed_nodes[node] <= n_bp_traversed:
             #print("   Stopping. already processed")
@@ -46,19 +66,23 @@ class Aligner:
 
         self._traversed_nodes[node] = n_bp_traversed
 
-        self._nodes.add(node)
+        if is_traversing_left:
+            self._nodes.add(abs(node))
+        else:
+            self._nodes.add(node)
+
 
         n_bp_traversed += self.ob_graph.blocks[node].length()
 
-        if n_bp_traversed > self._n_bp_to_traverse:
-            #print("    Stopping because length")
+        if n_bp_traversed > n_bp_to_traverse:
+            #print("    Stopping because length (traversed: %d, max: %d)" % (n_bp_traversed, n_bp_to_traverse))
             return
 
-        edges_out = self.adj_list[node]
+        edges_out = adj_list[node]
         #print(" Edges out: %s" % edges_out)
         for next_node in edges_out:
             #print("   Going to node %d" % next_node)
-            self._traverse_from_node(next_node, node, n_bp_traversed)
+            self._traverse_from_node(next_node, node, n_bp_traversed, is_traversing_left=is_traversing_left)
 
 
     def align(self):
@@ -73,10 +97,14 @@ class Aligner:
             edges = [(max_node - abs(e[0]), max_node - abs(e[1])) for e in edges]
 
         #print("  --- ")
+
         #print(self.sequence)
         #print(len(self.sequence))
-        print(nodes)
-        print(edges)
+        #print(self._n_bp_to_traverse_left)
+        #print(self._n_bp_to_traverse_right)
+        #print(self.sequence)
+        #print(nodes)
+        #print(edges)
         #print(sequences)
         aligned_to_nodes, score = align(nodes, sequences, edges, self.sequence)
         if self.is_reverse:
@@ -110,7 +138,7 @@ def align(nodes, node_sequences, edges, sequence):
     for node in gssw_nodes.values():
         gssw_graph_add_node(graph, node)
 
-    gssw_graph_fill(graph, sequence, nttable, mat, gap_open, gap_extension, 0, 0, 15, 2, True)
+    gssw_graph_fill(graph, sequence, nttable, mat, gap_open, gap_extension, 0, 0, 0, 2, True)
     mapping = test_wrapper(graph,
                            sequence,
                            len(sequence),
