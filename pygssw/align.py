@@ -16,7 +16,7 @@ class Aligner:
         self.adj_list = ob_graph.adj_list
         if self.start_node < 0:
             self.is_reverse = True
-            self.adj_lis = ob_graph.reverse_adj_list
+            self.adj_list = ob_graph.reverse_adj_list
 
 
         self._nodes = set()
@@ -66,19 +66,22 @@ class Aligner:
         edges = sorted(self._edges, key=lambda e: e[0])
         sequences = [self._sequence_graph.get_sequence_on_directed_node(node) for node in nodes]
         if self.is_reverse:
-            nodes = [-n for n in nodes]
+            # Hacky conversion, we need nodes to increase
+            max_node = max(abs(n) for n in nodes)
+            nodes = [max_node - abs(n) for n in nodes]
             nodes = sorted(nodes)
-            edges = [(-e[0], -e[1]) for e in edges]
+            edges = [(max_node - abs(e[0]), max_node - abs(e[1])) for e in edges]
 
         #print("  --- ")
         #print(self.sequence)
         #print(len(self.sequence))
-        #print(nodes)
-        #print(edges)
+        print(nodes)
+        print(edges)
         #print(sequences)
         aligned_to_nodes, score = align(nodes, sequences, edges, self.sequence)
         if self.is_reverse:
-            aligned_to_nodes = [-n for n in aligned_to_nodes]
+            # Convert node ids back
+            aligned_to_nodes = [-n + max_node for n in aligned_to_nodes]
         return aligned_to_nodes, score
 
 
