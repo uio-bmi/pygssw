@@ -112,12 +112,47 @@ class Aligner:
             aligned_to_nodes = [-n + max_node for n in aligned_to_nodes]
         return aligned_to_nodes, score
 
+def compress_node_ids(nodes, edges):
+    node_id = 1
+    forward_mapping = {}
+    back_mapping = {}
+
+    new_nodes = []
+    new_edges = []
+    for node in nodes:
+        forward_mapping[node] = node_id
+        back_mapping[node_id] = node
+        new_nodes.append(node_id)
+        node_id += 1
+
+    for edge in edges:
+        edge = (forward_mapping[edge[0]], forward_mapping[edge[1]])
+        new_edges.append(edge)
+
+    return new_nodes, new_edges, back_mapping
+
+
+def decompress_node_ids(nodes, mapping):
+    new_nodes = []
+    for node in nodes:
+        new_nodes.append(mapping[node])
+
+    return new_nodes 
+
 
 def align(nodes, node_sequences, edges, sequence):
     # nodes is list of node ids
     # node_sequences is list of node sequences
     # edges is list of tuples (from node, to node)
 
+
+    #max_node = min(nodes) - 1
+    #nodes = [n - max_node for n in nodes]
+    #edges = [(e[0] - max_node, e[1] - max_node) for e in edges]
+    nodes, edges, node_mapping = compress_node_ids(nodes, edges)
+    #print(nodes)
+    #print(edges)
+    
     match = 1
     mismatch = 4
     gap_open = 6
@@ -149,12 +184,43 @@ def align(nodes, node_sequences, edges, sequence):
                            0, 0)
 
     score = mapping[-1]
-    return mapping[0:-1], score*2
+    aligned_nodes = mapping[0:-1]
+    #aligned_nodes = [n + max_node for n in aligned_nodes]
+    aligned_nodes = decompress_node_ids(aligned_nodes, node_mapping)
+    return aligned_nodes, score*2
 
 
 if __name__ == "__main__":
     import sys
 
+    read = "AAA"
+    nodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    edges = [(1, 2), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6), (6, 7), (7, 8), (8, 9), (9, 10), (9, 11)]
+    sequences = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"]
+    alignment, score = align(nodes, sequences, edges, read)
+    print(alignment, score)
+    sys.exit()
+
+
+    nodes = [1731517, 1731518, 1731519, 1731520, 1731521, 1731522, 1731523, 1731524, 1731525, 1731526, 1731527, 1731528,
+     1731529, 1731530, 1731531, 1731532, 1731533, 1731534, 1731535]
+    edges = [(1731517, 1731518), (1731518, 1731519), (1731519, 1731520), (1731520, 1731521), (1731521, 1731522),
+     (1731522, 1731523), (1731522, 1731524), (1731523, 1731525), (1731524, 1731525), (1731525, 1731526),
+     (1731525, 1731527), (1731526, 1731528), (1731527, 1731528), (1731528, 1731529), (1731529, 1731530),
+     (1731529, 1731531), (1731530, 1731532), (1731531, 1731532), (1731532, 1731533), (1731533, 1731534),
+     (1731534, 1731535)]
+
+
+    #nodes = [n - 1731516 for n in nodes]
+    #edges = [(e[0] - 1731516, e[1] - 1731516) for e in edges]
+    sequences = ['gtgaacgagagtccgtctgcaatcccggcacc', 'tcgggaggccgaggctggcggatcactcgcgg', 'ttaggagctgcagaccagcccagccaacacag',
+     'cgaatccccgtctccaccaaaaaaatacgaaa', 'accagtcaggcgtggcggcgtgcgcctgcaat', 'cgcaggca', 't', 'c', 'tcggcaa', 'a', 'g',
+     'ctgaggcaagagaatcaggcagggaggttgca', 'gtgagccgagat', 'a', 'g', 'gcagcagtaccgtccagctttggctcggcatc',
+     'agagggagaccgtggaaagagagggagtggga', 'gaccgtggggagagggagagggagagggaggg', 'ggagggggagggagagggagagggagagggag']
+    alignment, score = align(nodes, sequences, edges, "CCCCC")
+    print(alignment, score)
+
+    sys.exit()
     """
     nodes = [534647, 534648, 534649, 534650, 534651, 534652, 534653, 534654, 534655, 534656, 534657, 534658, 534659, 534660, 534661, 534662, 534663, 534664, 534665, 534666, 534667]
     edges = [(534647, 534649), (534647, 534648), (534648, 534650), (534649, 534650), (534650, 534651), (534650, 534652),
