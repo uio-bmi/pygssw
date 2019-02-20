@@ -154,6 +154,30 @@ def align(nodes, node_sequences, edges, sequence):
 
 if __name__ == "__main__":
     import sys
+    read = "AAA"
+    nodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 16]
+    edges = [(1, 2), (2, 3), (3, 4), (3, 5), (4, 6), (5, 6), (6, 7), (7, 8), (8, 9), (9, 16), (9, 12)]
+    sequences = ["A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A"]
+    alignment, score = align(nodes, sequences, edges, read)
+    print(alignment, score)
+    sys.exit()
+
+    read = "GCGGTTAGGAGCTGGAGACCAGCCTTGCCAACCCAGCGAAACCCCGTCCCCACCAAAAAAATACGAAAAGCAGTCAGGCGTGGCGGCGTGCGCCTGCAATCGCAGGCACTCGGCAGGTTGAGGCAGGAGAATCAGGCAGGGAGGTTGCAG"
+    nodes = [1731517, 1731518, 1731519, 1731520, 1731521, 1731522, 1731523, 1731524, 1731525, 1731526, 1731527, 1731528,
+     1731529, 1731530, 1731531, 1731532, 1731533, 1731534, 1731535]
+    edges = [(1731517, 1731518), (1731518, 1731519), (1731519, 1731520), (1731520, 1731521), (1731521, 1731522),
+     (1731522, 1731523), (1731522, 1731524), (1731523, 1731525), (1731524, 1731525), (1731525, 1731526),
+     (1731525, 1731527), (1731526, 1731528), (1731527, 1731528), (1731528, 1731529), (1731529, 1731530),
+     (1731529, 1731531), (1731530, 1731532), (1731531, 1731532), (1731532, 1731533), (1731533, 1731534),
+     (1731534, 1731535)]
+    sequences = ['gtgaacgagagtccgtctgcaatcccggcacc', 'tcgggaggccgaggctggcggatcactcgcgg', 'ttaggagctgcagaccagcccagccaacacag',
+     'cgaatccccgtctccaccaaaaaaatacgaaa', 'accagtcaggcgtggcggcgtgcgcctgcaat', 'cgcaggca', 't', 'c', 'tcggcaa', 'a', 'g',
+     'ctgaggcaagagaatcaggcagggaggttgca', 'gtgagccgagat', 'a', 'g', 'gcagcagtaccgtccagctttggctcggcatc',
+     'agagggagaccgtggaaagagagggagtggga', 'gaccgtggggagagggagagggagagggaggg', 'ggagggggagggagagggagagggagagggag']
+    alignment, score = align(nodes, sequences, edges, read)
+    print(alignment, score)
+
+    sys.exit()
 
     """
     nodes = [534647, 534648, 534649, 534650, 534651, 534652, 534653, 534654, 534655, 534656, 534657, 534658, 534659, 534660, 534661, 534662, 534663, 534664, 534665, 534666, 534667]
@@ -168,7 +192,7 @@ if __name__ == "__main__":
     print(alignment, score)
     """
     nodes, score = align(
-        [1, 2, 3, 4], ["AGG", "AAAA", "A", "A"], [(1, 2), (1, 3), (3, 2), (3, 4), (2, 4)], "CCCCCC"
+        [1, 2, 3, 4], ["AGG", "AAAA", "A", "A"], [(1, 2), (1, 3), (3, 2), (3, 4), (2, 4)], read
     )
 
     nodes, score = align(
