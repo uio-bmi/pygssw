@@ -4671,6 +4671,10 @@ int* test_wrapper(gssw_graph* graph,
     }
     */
     *len = gm->cigar.length + 1; //sizeof output/sizeof *output;
+    free(nt_table);
+    free(score_matrix);
+    gssw_graph_destroy(graph);
+    gssw_graph_mapping_destroy(gm);
     return output;
     /*
     return gm->cigar;

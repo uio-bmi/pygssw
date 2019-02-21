@@ -7,4 +7,6 @@ demo/
 *.egg-info/
 __pycache__
 *.o
+*.so
+gssw_wrap.c
 *.gch
