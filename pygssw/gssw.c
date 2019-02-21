@@ -4638,7 +4638,10 @@ int* test_wrapper(gssw_graph* graph,
                                            int8_t start_full_length_bonus,
                                            int8_t end_full_length_bonus,
                                            size_t* len) {
-          gssw_graph_mapping** gms = gssw_graph_trace_back_internal(graph,
+
+    // Fill graph first
+    gssw_graph_fill(graph, read, nt_table, score_matrix, gap_open, gap_extension, 0, 0, 0, 2, true);
+    gssw_graph_mapping** gms = gssw_graph_trace_back_internal(graph,
                                                               0,
                                                               1,
                                                               0,

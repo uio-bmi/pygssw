@@ -173,7 +173,7 @@ def align(nodes, node_sequences, edges, sequence):
     for node in gssw_nodes.values():
         gssw_graph_add_node(graph, node)
 
-    gssw_graph_fill(graph, sequence, nttable, mat, gap_open, gap_extension, 0, 0, 0, 2, True)
+    #gssw_graph_fill(graph, sequence, nttable, mat, gap_open, gap_extension, 0, 0, 0, 2, True)
     mapping = test_wrapper(graph,
                            sequence,
                            len(sequence),
