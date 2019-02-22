@@ -1,25 +1,6 @@
 
-# pygssw
-Simple python wrapper around GSSW.
-
-## Install
-(Assumes linux)
-Install requirements first:
-```bash
-apt install swig
-apt install python3-dev
-
-```
-Then install:
-```bash
-cd pygssw   # Folder pygssw inside the repo
-swig -python gssw.i
-gcc -fpic  -c -O3 -msse4 gssw.c gssw_wrap.c -I/usr/include/python3.6m
-ld -shared gssw.o gssw_wrap.o -o _gssw.so
-cd ..
-pip3 install -e .
-```
-NOTE: Change /usr/include/python3.6m to python-dev executable (requires intallation of python-dev, i.e. `apt-get install python3-dev`)
+# Pygssw
+A simple python wrapper around [gssw](https://github.com/vgteam/gssw), enabling sequence to graph alignment from Python.
 
 # Usage
 ```python
@@ -33,5 +14,33 @@ alignment, score = align(nodes, node_sequences, edges, read)
 print(alignment, score)
 ```
 
+Note: It seems that GSSW only supports dense sorted nodes, and no edges going from a higher node id to a lower. 
+Pygssw attempts to converting all node IDs before calling GSSW. After aligning, it converts the node IDs back.
+
+
+
+## Install
+Pygssw is only tested with Python 3, and can be installed with pip:
+```
+pip3 install pygssw
+```
+## Installing from source
+This guide assumes linux.
+* Clone this repository
+* Install requirements:
+```bash
+apt install swig
+apt install python3-dev
+```
+* Install:
+```bash
+cd pygssw   # Folder pygssw inside the repo
+swig -python gssw.i
+gcc -fpic  -c -O3 -msse4 gssw.c gssw_wrap.c -I/usr/include/python3.6m
+ld -shared gssw.o gssw_wrap.o -o _gssw.so
+cd ..
+pip3 install -e .
+```
+NOTE: Change /usr/include/python3.6m to python-dev executable (requires intallation of python-dev, i.e. `apt-get install python3-dev`)
 
 
