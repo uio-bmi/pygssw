@@ -1,6 +1,12 @@
 
 # Pygssw
-A simple python wrapper around [gssw](https://github.com/vgteam/gssw), enabling sequence to graph alignment from Python.
+A simple Python wrapper around [gssw](https://github.com/vgteam/gssw), enabling sequence to graph alignment from Python. Only tested with Python 3.
+
+## Install
+Pygssw can installed with pip:
+```
+pip3 install pygssw
+```
 
 # Usage
 ```python
@@ -19,11 +25,6 @@ Pygssw attempts to converting all node IDs before calling GSSW. After aligning, 
 
 
 
-## Install
-Pygssw is only tested with Python 3, and can be installed with pip:
-```
-pip3 install pygssw
-```
 ## Installing from source
 This guide assumes linux.
 * Clone this repository
