@@ -5,7 +5,7 @@ gssw_extension = Extension('_gssw', sources=['pygssw/gssw_wrap.c', 'pygssw/gssw.
 
 
 setup(name='pygssw',
-      version='0.0.4',
+      version='0.0.5',
       description='Wrapper around GSSW, making it possible to align reads to graphs from python using GSSW',
       url='http://github.com/uio-bmi/pygssw',
       author='Ivar Grytten',
