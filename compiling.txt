@@ -1,35 +1,4 @@
-
-swig -python interface.i
-
-
-gcc -Wall -O3 -msse4 -g  -c gssw.c gssw_wrap.c -I/usr/python/python3
-cc -fpic -c gssw_wrap.c -I
-
-gcc -fpic -I/usr/bin/python3 -c gssw.c
-
-	
-ld -shared gssw.o gssw_wrap.o -o _gssw.so 
- 
- 
- 
- 
-gcc -Wall -O3 -msse4 -g -c -o obj/gssw.o src/gssw.c
-
-
-
-gcc -c gssw.c example_wrap.c -I/usr/bin/python3
-
-
-swig -python example.i
-gcc -fpic  -c -O3 -msse4 gssw.c -o _example.so example_wrap.c -I/usr/include/python3.6m
-ld -shared gssw.o example_wrap.o -o _example.so
-
-
-
-
-
-
-# nytt forsøk
+# Note on how to compile swig gssw locally:
 swig -python gssw.i
 gcc -fpic  -c -O3 -msse4 gssw.c gssw_wrap.c -I/usr/include/python3.6m
 ld -shared gssw.o gssw_wrap.o -o _gssw.so

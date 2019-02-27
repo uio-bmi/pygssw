@@ -10,7 +10,7 @@ pip3 install pygssw
 
 # Usage
 ```python
-from pygssw.align import align
+from pygssw import align
 nodes = [1, 2, 3] 
 edges = [(1, 2), (2, 3)]
 node_sequences = ["AAA", "CCC", "TTT"]  # Same order as nodes list

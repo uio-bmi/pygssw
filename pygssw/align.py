@@ -4,7 +4,7 @@ from pygssw.gssw import gssw_node_create, gssw_create_nt_table, gssw_create_scor
     gssw_graph_fill, gssw_graph_print_score_matrices, gssw_graph_trace_back, test_wrapper
 
 
-class Aligner:
+class OffsetBasedGraphAligner:
     def __init__(self, ob_graph, sequence_graph, start_node, sequence,
                  n_bp_to_traverse_right=None, n_bp_to_traverse_left=None):
         self.ob_graph = ob_graph
@@ -95,17 +95,6 @@ class Aligner:
             nodes = sorted(nodes)
             edges = [(max_node - abs(e[0]), max_node - abs(e[1])) for e in edges]
 
-        #print("  --- ")
-
-        #print(self.sequence)
-        #print(len(self.sequence))
-        #print(self._n_bp_to_traverse_left)
-        #print(self._n_bp_to_traverse_right)
-        #print(self.sequence)
-        #print(self.sequence.lower())
-        #print(nodes)
-        #print(edges)
-        #print(sequences)
         aligned_to_nodes, score = align(nodes, sequences, edges, self.sequence)
         if self.is_reverse:
             # Convert node ids back
@@ -113,6 +102,7 @@ class Aligner:
         return aligned_to_nodes, score
 
 def compress_node_ids(nodes, edges):
+
     node_id = 1
     forward_mapping = {}
     back_mapping = {}
