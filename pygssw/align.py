@@ -36,7 +36,8 @@ class OffsetBasedGraphAligner:
 
     def _find_all_local_nodes_and_edges(self):
         self._traverse_from_node(self.start_node, None, n_bp_traversed=0, is_traversing_left=False)
-        self._traverse_from_node(-self.start_node, None, n_bp_traversed=0, is_traversing_left=True)
+        if self._n_bp_to_traverse_left > 0:
+            self._traverse_from_node(-self.start_node, None, n_bp_traversed=0, is_traversing_left=True)
 
     def _traverse_from_node(self, node, prev_node, n_bp_traversed, is_traversing_left=False):
         adj_list = self.ob_graph.adj_list
@@ -136,18 +137,12 @@ def align(nodes, node_sequences, edges, sequence):
     # edges is list of tuples (from node, to node)
 
 
-    #max_node = min(nodes) - 1
-    #nodes = [n - max_node for n in nodes]
-    #edges = [(e[0] - max_node, e[1] - max_node) for e in edges]
     nodes, edges, node_mapping = compress_node_ids(nodes, edges)
-    #print(nodes)
-    #print(edges)
-    
+
     match = 1
     mismatch = 4
     gap_open = 6
     gap_extension = 1
-    read_seq = "TTTTTTT"
 
     nttable = gssw_create_nt_table()
     mat = gssw_create_score_matrix(match, mismatch)
@@ -165,7 +160,7 @@ def align(nodes, node_sequences, edges, sequence):
 
     #gssw_graph_fill(graph, sequence, nttable, mat, gap_open, gap_extension, 0, 0, 0, 2, True)
     mapping = test_wrapper(graph,
-                           sequence,
+                           str(sequence),
                            len(sequence),
                            nttable,
                            mat,
